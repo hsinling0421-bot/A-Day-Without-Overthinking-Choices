@@ -3,40 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>我的一天｜分餐選擇器</title>
+  <title>告別選擇障礙 🍮</title>
   <script src="https://tailwindcss.com"></script>
+  <link href="https://googleapis.com" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; background-color: #ffd46728; color: #4a3b18; }
-    .card { background: rgba(255,255,255,0.95); border: 1.5px solid #ffd46788; }
-    .btn-gold { background: #ffd467; color: #3d2e08; }
-    .btn-gold:hover { background: #f5c342; }
+    body { font-family: 'Zen Maru Gothic', sans-serif; background-color: #ffd46728; background-image: radial-gradient(#f2be3555 2px, transparent 2px); background-size: 24px 24px; color: #593e18; }
+    .block-box { background: #fffefa; border: 2.5px solid #ffd467; border-radius: 22px; box-shadow: 0 4px 0 #ffd46788; }
+    .jelly-btn { background: #ffd467; color: #52360c; border: 2px solid #eab32e; box-shadow: 0 3px 0 #eab32e; }
+    .jelly-btn:active { transform: translateY(2px); box-shadow: none; }
+    .sub-btn { background: #fff9eb; color: #6b4a18; border: 2px solid #ffd467; box-shadow: 0 2px 0 #ffd46799; }
   </style>
 </head>
 <body class="min-h-screen pb-12">
 
-  <header class="sticky top-0 z-20 bg-[#fffdf7] border-b border-[#ffd46788] px-4 py-3">
-    <div class="max-w-2xl mx-auto">
-      <div class="flex justify-between items-center mb-3">
-        <h1 class="text-lg font-bold">🍽️ 我的一天｜告別選擇障礙</h1>
-        <button onclick="rollAll()" class="btn-gold text-xs font-bold px-3.5 py-2 rounded-full cursor-pointer">✨ 一鍵決定整天</button>
+  <header class="sticky top-0 z-20 bg-[#fffdf7]/95 border-b-2 border-dashed border-[#ffd467] px-4 py-3">
+    <div class="max-w-lg mx-auto">
+      <div class="flex justify-between items-center mb-2.5">
+        <h1 class="text-lg font-black text-[#52360c]">🍮 告別選擇障礙</h1>
+        <button onclick="rollAll()" class="jelly-btn text-xs font-black px-3.5 py-2 rounded-full cursor-pointer">✨ 今日隨機菜單</button>
       </div>
-      <nav id="navTabs" class="grid grid-cols-5 gap-1 bg-[#ffd46728] p-1 rounded-xl text-xs font-bold"></nav>
+      <nav id="navTabs" class="grid grid-cols-5 gap-1 bg-[#ffd46733] p-1 rounded-2xl text-xs font-black"></nav>
     </div>
   </header>
 
-  <main id="app" class="max-w-2xl mx-auto px-4 pt-6"></main>
+  <main id="app" class="max-w-lg mx-auto px-4 pt-5"></main>
 
   <script>
     const ORDER = ['breakfast', 'lunch', 'tea', 'dinner'];
-    let data = JSON.parse(localStorage.getItem('food_mini_v1')) || {
-      breakfast: { name: '🌅 早餐', time: '08:30', pick: '總匯三明治＋鮮奶茶', list: ['總匯三明治＋鮮奶茶', '起司蛋餅＋冰美式', '鮪魚吐司＋無糖豆漿', '日式飯糰＋熱拿鐵', '地瓜＋水煮蛋'] },
-      lunch:     { name: '☀️ 午餐', time: '12:00', pick: '舒肥雞胸健康餐盒', list: ['舒肥雞胸健康餐盒', '日式豚骨拉麵', '泰式打拋豬飯', '鮮蝦雲吞麵', '韓式泡菜豆腐鍋'] },
-      tea:       { name: '🧋 下午茶', time: '15:30', pick: '熟成紅茶微糖＋珍珠', list: ['熟成紅茶微糖＋珍珠', '四季春無糖去冰', '焦糖布丁＋熱紅茶', '巴斯克蛋糕＋美式', '現烤可頌＋拿鐵'] },
-      dinner:    { name: '🌙 晚餐', time: '19:00', pick: '昆布小火鍋', list: ['昆布小火鍋', '炙燒鮭魚丼飯', '水餃10顆＋酸辣湯', '越式牛肉河粉', '滷味拼盤'] }
+    let data = JSON.parse(localStorage.getItem('food_cute_mini_v1')) || {
+      breakfast: { icon: '🥐', name: '早餐', time: '08:30', pick: '總匯三明治＋鮮奶茶', list: ['總匯三明治＋鮮奶茶', '起司蛋餅＋冰美式', '鮪魚吐司＋無糖豆漿', '日式飯糰＋熱拿鐵', '地瓜＋水煮蛋'] },
+      lunch:     { icon: '🍱', name: '午餐', time: '12:00', pick: '舒肥雞胸健康餐盒', list: ['舒肥雞胸健康餐盒', '日式豚骨拉麵', '泰式打拋豬飯', '鮮蝦雲吞麵', '韓式泡菜豆腐鍋'] },
+      tea:       { icon: '🧋', name: '下午茶', time: '15:30', pick: '熟成紅茶微糖＋珍珠', list: ['熟成紅茶微糖＋珍珠', '四季春無糖去冰', '焦糖布丁＋熱紅茶', '巴斯克蛋糕＋美式', '現烤可頌＋拿鐵'] },
+      dinner:    { icon: '🍲', name: '晚餐', time: '19:00', pick: '昆布小火鍋', list: ['昆布小火鍋', '炙燒鮭魚丼飯', '水餃10顆＋酸辣湯', '越式牛肉河粉', '滷味拼盤'] }
     };
     let tab = 'breakfast';
 
-    const save = () => localStorage.setItem('food_mini_v1', JSON.stringify(data));
+    const save = () => localStorage.setItem('food_cute_mini_v1', JSON.stringify(data));
     const go = (t) => { tab = t; render(); };
 
     function roll(k) {
@@ -58,8 +60,8 @@
 
     function del(i, e) {
       e.stopPropagation();
-      const rm = data[tab].list.splice(i, 1);
-      if (data[tab].pick === rm) data[tab].pick = data[tab].list || '尚未選擇';
+      const rm = data[tab].list.splice(i, 1)[0];
+      if (data[tab].pick === rm) data[tab].pick = data[tab].list[0] || '還沒選喔～';
       save(); render();
     }
 
@@ -73,60 +75,65 @@
     }
 
     function copyAll() {
-      const txt = ORDER.map(k => `${data[k].name}（${data[k].time}）：${data[k].pick}`).join('\n');
+      const txt = '🍮 今日隨機菜單：\n' + ORDER.map(k => `${data[k].icon} ${data[k].name}（${data[k].time}）：${data[k].pick}`).join('\n');
       navigator.clipboard.writeText(txt);
       document.getElementById('cpBtn').textContent = '✅ 已複製！';
     }
 
     function render() {
-      const tabs = [...ORDER.map(k => ({ k, label: data[k].name })), { k: 'summary', label: '📋 總覽' }];
+      const tabs = [...ORDER.map(k => ({ k, label: `${data[k].icon} ${data[k].name}` })), { k: 'summary', label: '🎀 總覽' }];
       document.getElementById('navTabs').innerHTML = tabs.map(t =>
-        `<button onclick="go('${t.k}')" class="py-2 rounded-lg cursor-pointer ${tab === t.k ? 'btn-gold shadow-xs' : 'hover:bg-white/60'}">${t.label}</button>`
+        `<button onclick="go('${t.k}')" class="py-2 rounded-xl cursor-pointer transition ${tab === t.k ? 'bg-[#ffd467] text-[#52360c] shadow-xs' : 'text-[#8c651c] hover:bg-white/60'}">${t.label}</button>`
       ).join('');
 
       const app = document.getElementById('app');
       if (tab === 'summary') {
-        app.innerHTML = `
-          <div class="card rounded-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center">
-              <h2 class="text-lg font-bold">📋 今日四餐最終決定</h2>
-              <button id="cpBtn" onclick="copyAll()" class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#ffd467] bg-white cursor-pointer">複製整天菜單</button>
-            </div>
-            ${ORDER.map(k => `
-              <div class="p-3.5 rounded-xl bg-[#ffd46728] flex justify-between items-center">
-                <div><span class="text-xs font-bold text-[#8a6814]">${data[k].name}（${data[k].time}）</span><p class="font-bold">${data[k].pick}</p></div>
-                <button onclick="roll('${k}')" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-white border border-[#ffd467] cursor-pointer">🎲 重抽</button>
-              </div>`).join('')}
-          </div>`;
+        app.innerHTML = `<div class="space-y-3.5">
+          <div class="block-box px-5 py-3.5 flex justify-between items-center">
+            <h2 class="text-base font-black">🎀 今日隨機菜單總覽</h2>
+            <button id="cpBtn" onclick="copyAll()" class="sub-btn text-xs font-black px-3 py-1.5 rounded-full cursor-pointer">📋 複製菜單</button>
+          </div>
+          ${ORDER.map(k => `
+            <div class="block-box p-4 flex justify-between items-center gap-2">
+              <div>
+                <span class="text-xs font-black text-[#9c6f19]">${data[k].icon} ${data[k].name}・${data[k].time}</span>
+                <p class="font-black text-base mt-0.5">${data[k].pick}</p>
+              </div>
+              <div class="flex gap-1.5 shrink-0">
+                <button onclick="roll('${k}')" class="sub-btn text-xs font-black px-3 py-1.5 rounded-full cursor-pointer">🎲 重抽</button>
+                <button onclick="go('${k}')" class="text-xs font-black text-[#9c6f19] px-2 py-1.5 cursor-pointer">編輯➔</button>
+              </div>
+            </div>`).join('')}
+        </div>`;
         return;
       }
 
       const m = data[tab];
       const nextTab = ORDER[ORDER.indexOf(tab) + 1] || 'summary';
-      app.innerHTML = `
-        <div class="card rounded-2xl p-6 text-center space-y-4 mb-5">
-          <span class="text-xs font-bold bg-[#ffd46745] px-3 py-1 rounded-full">建議時段 ${m.time}</span>
-          <h2 class="text-2xl font-bold">${m.name}選擇</h2>
-          <div class="py-5 px-4 rounded-xl bg-[#ffd46728] border border-dashed border-[#d9a726] text-xl font-bold">${m.pick}</div>
-          <div class="flex justify-center gap-3">
-            <button onclick="roll('${tab}')" class="btn-gold font-bold text-sm px-6 py-3 rounded-xl cursor-pointer">🎲 幫我隨機抽</button>
-            <button onclick="go('${nextTab}')" class="bg-white border border-[#ffd467] font-bold text-sm px-5 py-3 rounded-xl cursor-pointer">下一餐 ➔</button>
+      app.innerHTML = `<div class="space-y-4">
+        <div class="block-box p-5 text-center space-y-3">
+          <div class="flex justify-between text-xs font-bold text-[#a87c28]"><span>${m.icon} ${m.name}時間</span><span>⏰ ${m.time}</span></div>
+          <div class="py-4 px-3 rounded-2xl bg-[#ffd46728] border-2 border-dashed border-[#eab32e] text-xl font-black">${m.pick}</div>
+          <div class="flex justify-center gap-2.5">
+            <button onclick="roll('${tab}')" class="jelly-btn font-black text-sm px-5 py-2.5 rounded-full cursor-pointer">🎲 幫我抽一個</button>
+            <button onclick="go('${nextTab}')" class="sub-btn font-black text-sm px-4 py-2.5 rounded-full cursor-pointer">下一餐 ➔</button>
           </div>
         </div>
-        <div class="card rounded-2xl p-5 space-y-4">
-          <h3 class="font-bold text-sm">🍱 口袋名單（點擊直接選定）</h3>
+        <div class="block-box p-4 space-y-2.5">
+          <h3 class="font-black text-xs text-[#7a5412]">🧸 我的${m.name}口袋名單（點擊直接選定）</h3>
           <div class="flex flex-wrap gap-2">
             ${m.list.map((item, i) => `
-              <div onclick="choose(${i})" class="px-3 py-1.5 rounded-full text-xs border cursor-pointer flex items-center gap-1.5 ${item === m.pick ? 'btn-gold border-[#d9a726] font-bold' : 'bg-white border-[#ffd46788]'}">
-                <span>${item === m.pick ? '✔ ' : ''}${item}</span>
-                <button onclick="del(${i}, event)" class="text-red-500 font-bold ml-1">×</button>
+              <div onclick="choose(${i})" class="px-3 py-1.5 rounded-full text-xs border-2 cursor-pointer flex items-center gap-1 ${item === m.pick ? 'bg-[#ffd467] border-[#eab32e] font-black' : 'bg-white border-[#ffd46788] font-bold'}">
+                <span>${item === m.pick ? '💛 ' : ''}${item}</span>
+                <button onclick="del(${i}, event)" class="text-rose-500 font-black ml-1">×</button>
               </div>`).join('')}
           </div>
-          <div class="flex gap-2">
-            <input id="newInp" onkeydown="if(event.key==='Enter')add()" placeholder="新增想吃的項目..." class="flex-1 border border-[#ffd467] rounded-lg px-3 py-2 text-xs bg-white">
-            <button onclick="add()" class="bg-[#4a3b18] text-white text-xs font-bold px-4 py-2 rounded-lg cursor-pointer">＋ 新增</button>
-          </div>
-        </div>`;
+        </div>
+        <div class="block-box p-4 flex gap-2">
+          <input id="newInp" onkeydown="if(event.key==='Enter')add()" placeholder="新增想吃的${m.name}美食..." class="flex-1 border-2 border-[#ffd467] rounded-full px-3.5 py-2 text-xs font-bold bg-white">
+          <button onclick="add()" class="jelly-btn text-xs font-black px-4 py-2 rounded-full cursor-pointer">＋ 加入</button>
+        </div>
+      </div>`;
     }
     render();
   </script>
