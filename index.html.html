@@ -5,398 +5,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>我的一天｜分餐選擇器</title>
   <script src="https://tailwindcss.com"></script>
-  <link href="https://googleapis.com" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Noto Sans TC', sans-serif;
-      background-color: #ffd46728;
-      background-image: radial-gradient(#e6b83a40 1px, transparent 1px);
-      background-size: 20px 20px;
-      color: #4a3b18;
-    }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      border: 1.5px solid #ffd46788;
-      box-shadow: 0 12px 30px -6px rgba(180, 130, 15, 0.1);
-    }
-    .brand-btn {
-      background: linear-gradient(135deg, #ffd467 0%, #ffc436 100%);
-      color: #3d2e08;
-      box-shadow: 0 4px 14px rgba(255, 196, 54, 0.4);
-    }
-    .brand-btn:hover {
-      background: linear-gradient(135deg, #ffca47 0%, #f5b622 100%);
-    }
-    .tab-active {
-      background-color: #ffd467;
-      color: #3d2e08;
-      box-shadow: 0 2px 6px rgba(180, 130, 15, 0.15);
-    }
-    .tab-inactive {
-      color: #735610;
-    }
-    .tab-inactive:hover {
-      background-color: rgba(255, 255, 255, 0.65);
-    }
+    body { font-family: sans-serif; background-color: #ffd46728; color: #4a3b18; }
+    .card { background: rgba(255,255,255,0.95); border: 1.5px solid #ffd46788; }
+    .btn-gold { background: #ffd467; color: #3d2e08; }
+    .btn-gold:hover { background: #f5c342; }
   </style>
 </head>
-<body class="min-h-screen pb-16">
+<body class="min-h-screen pb-12">
 
-  <!-- 頂部導覽與五個獨立分頁 -->
-  <header class="sticky top-0 z-30 border-b border-[#ffd46788] bg-[#fffdf7]/95 backdrop-blur-md">
-    <div class="max-w-3xl mx-auto px-4 pt-3.5 pb-2.5">
+  <header class="sticky top-0 z-20 bg-[#fffdf7] border-b border-[#ffd46788] px-4 py-3">
+    <div class="max-w-2xl mx-auto">
       <div class="flex justify-between items-center mb-3">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-[#ffd467] flex items-center justify-center text-lg">🍽️</div>
-          <div>
-            <span class="text-[10px] font-bold tracking-widest uppercase text-[#a67c14] block leading-none">MY DAY FOOD PICKER</span>
-            <h1 class="text-base sm:text-lg font-black text-[#3d2e08]">我的一天｜告別選擇障礙</h1>
-          </div>
-        </div>
-        <button type="button" onclick="rollAllAndSummary()" class="brand-btn font-bold text-xs px-4 py-2 rounded-full transition active:scale-95 cursor-pointer">
-          ✨ 一鍵決定整天
-        </button>
+        <h1 class="text-lg font-bold">🍽️ 我的一天｜告別選擇障礙</h1>
+        <button onclick="rollAll()" class="btn-gold text-xs font-bold px-3.5 py-2 rounded-full cursor-pointer">✨ 一鍵決定整天</button>
       </div>
-
-      <!-- 固定顯示的五個分頁按鈕 -->
-      <nav class="grid grid-cols-5 gap-1.5 bg-[#ffd46728] p-1.5 rounded-2xl border border-[#ffd46766]">
-        <button type="button" id="tab-breakfast" onclick="switchTab('breakfast')" class="tab-active flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl text-xs font-bold transition cursor-pointer">
-          <span>🌅</span><span>早餐</span>
-        </button>
-        <button type="button" id="tab-lunch" onclick="switchTab('lunch')" class="tab-inactive flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl text-xs font-bold transition cursor-pointer">
-          <span>☀️</span><span>午餐</span>
-        </button>
-        <button type="button" id="tab-tea" onclick="switchTab('tea')" class="tab-inactive flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl text-xs font-bold transition cursor-pointer">
-          <span>🧋</span><span>下午茶</span>
-        </button>
-        <button type="button" id="tab-dinner" onclick="switchTab('dinner')" class="tab-inactive flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl text-xs font-bold transition cursor-pointer">
-          <span>🌙</span><span>晚餐</span>
-        </button>
-        <button type="button" id="tab-summary" onclick="switchTab('summary')" class="tab-inactive flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl text-xs font-bold transition cursor-pointer">
-          <span>📋</span><span>今日總覽</span>
-        </button>
-      </nav>
+      <nav id="navTabs" class="grid grid-cols-5 gap-1 bg-[#ffd46728] p-1 rounded-xl text-xs font-bold"></nav>
     </div>
   </header>
 
-  <!-- 單餐主畫面 -->
-  <main class="max-w-3xl mx-auto px-4 pt-6">
-    <div id="singleMealView" class="space-y-6">
-      <section class="glass-card rounded-3xl overflow-hidden">
-        <div class="bg-gradient-to-r from-[#ffd46766] via-[#ffd46738] to-[#fffdf7] px-6 py-5 border-b border-[#ffd46766] flex justify-between items-center">
-          <div>
-            <span id="mealTimeBadge" class="inline-block text-xs font-bold text-[#8a6814] bg-white/85 px-2.5 py-0.5 rounded-full mb-1">建議時段 08:30</span>
-            <h2 id="mealTitle" class="text-2xl font-black text-[#3d2e08]">🌅 早餐選擇</h2>
-            <p id="mealSubtitle" class="text-xs text-[#735610] mt-1">用美味喚醒早晨，開啟一整天的好心情</p>
-          </div>
-          <span id="mealStepBadge" class="text-xs font-bold text-[#8a6814] bg-[#ffd46745] px-3 py-1 rounded-full">第 1 / 4 餐</span>
-        </div>
-
-        <div class="p-7 text-center bg-[#fffdf7]">
-          <p class="text-xs font-bold tracking-wider text-[#9c7b28] uppercase mb-2">TODAY'S CHOICE</p>
-          <div class="my-3 py-6 px-4 rounded-2xl bg-[#ffd46728] border-2 border-dashed border-[#ffd467aa]">
-            <p id="selectedMealText" class="text-xl sm:text-2xl font-black text-[#3d2e08]">總匯三明治 ＋ 無糖鮮奶茶</p>
-          </div>
-
-          <div class="flex flex-wrap justify-center gap-3 mt-5">
-            <button type="button" onclick="pickRandomCurrent()" class="brand-btn font-black text-sm px-7 py-3.5 rounded-2xl transition active:scale-95 cursor-pointer">
-              🎲 幫我隨機抽一個
-            </button>
-            <button type="button" id="nextMealBtn" onclick="goNextTab()" class="bg-white hover:bg-[#ffd46735] text-[#3d2e08] font-bold text-sm px-5 py-3.5 rounded-2xl border border-[#ffd46799] transition cursor-pointer">
-              決定好了，前往午餐 ☀️ ➔
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- 口袋名單區塊 -->
-      <section class="glass-card rounded-3xl p-6">
-        <div class="mb-4">
-          <h3 id="listHeading" class="font-black text-base text-[#3d2e08]">🍱 我的早餐口袋名單</h3>
-          <p class="text-xs text-[#8a6814]">直接點擊標籤就能手動選定，也可以隨時新增或刪除</p>
-        </div>
-
-        <div id="optionsChips" class="flex flex-wrap gap-2.5 mb-5"></div>
-
-        <div class="flex gap-2 pt-3 border-t border-[#ffd46755]">
-          <input id="newOptionInput" type="text" placeholder="輸入你想加入的餐點選項..." class="flex-1 bg-white border border-[#ffd46799] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#d4a324]">
-          <button type="button" onclick="addNewOption()" class="bg-[#4a3b18] hover:bg-[#3d2e08] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer">
-            ＋ 加入名單
-          </button>
-        </div>
-      </section>
-    </div>
-
-    <!-- 今日總覽畫面 -->
-    <div id="summaryView" class="hidden">
-      <section class="glass-card rounded-3xl overflow-hidden">
-        <div class="bg-gradient-to-r from-[#ffd46766] via-[#ffd46740] to-[#fff6db] px-6 py-5 border-b border-[#ffd46766] flex flex-wrap justify-between items-center gap-3">
-          <div>
-            <span id="todayDateText" class="text-xs font-bold text-[#8a6814] block mb-1"></span>
-            <h2 class="text-xl font-black text-[#3d2e08]">今日四餐最終決定清單</h2>
-          </div>
-          <button type="button" id="copyBtn" onclick="copyMenu()" class="bg-white hover:bg-[#ffd467] text-[#3d2e08] font-bold text-xs px-4 py-2.5 rounded-xl border border-[#ffd467aa] transition cursor-pointer">
-            📋 複製整天菜單
-          </button>
-        </div>
-
-        <div class="p-6 bg-[#fffdf7] space-y-3.5">
-          <div id="summaryCards" class="space-y-3"></div>
-          <div class="pt-4 flex justify-between items-center text-xs text-[#8a6814]">
-            <button type="button" onclick="resetDefaults()" class="underline hover:text-[#3d2e08] cursor-pointer">還原所有預設菜單</button>
-            <button type="button" onclick="rollAllAndSummary()" class="brand-btn font-bold px-4 py-2 rounded-xl cursor-pointer">🎰 全部重新抽籤</button>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
+  <main id="app" class="max-w-2xl mx-auto px-4 pt-6"></main>
 
   <script>
-    var MEAL_ORDER = ['breakfast', 'lunch', 'tea', 'dinner'];
-
-    var DEFAULT_MEALS = {
-      breakfast: {
-        time: '08:30',
-        emoji: '🌅',
-        shortName: '早餐',
-        title: '🌅 早餐選擇',
-        subtitle: '用美味喚醒早晨，開啟一整天的好心情',
-        selected: '總匯三明治 ＋ 無糖鮮奶茶',
-        options: [
-          '總匯三明治 ＋ 無糖鮮奶茶',
-          '起司蛋餅 ＋ 冰美式咖啡',
-          '鮪魚玉米吐司 ＋ 無糖豆漿',
-          '日式飯糰 ＋ 熱拿鐵',
-          '地瓜 ＋ 水煮蛋 ＋ 燕麥奶',
-          '培根花生厚片 ＋ 紅茶'
-        ]
-      },
-      lunch: {
-        time: '12:00',
-        emoji: '☀️',
-        shortName: '午餐',
-        title: '☀️ 午餐選擇',
-        subtitle: '中午吃飽飽，下午工作與生活才更有能量',
-        selected: '舒肥雞胸健康餐盒',
-        options: [
-          '舒肥雞胸健康餐盒',
-          '日式豚骨拉麵',
-          '泰式打拋豬飯 ＋ 荷包蛋',
-          '鮮蝦雲吞麵 ＋ 燙青菜',
-          '韓式泡菜豆腐鍋',
-          '義大利青醬雞肉麵'
-        ]
-      },
-      tea: {
-        time: '15:30',
-        emoji: '🧋',
-        shortName: '下午茶',
-        title: '🧋 下午茶選擇',
-        subtitle: '給忙碌的自己一點甜，專屬午後的療癒時光',
-        selected: '熟成紅茶微糖少冰 ＋ 白玉珍珠',
-        options: [
-          '熟成紅茶微糖少冰 ＋ 白玉珍珠',
-          '四季春青茶無糖去冰',
-          '焦糖布丁 ＋ 熱紅茶',
-          '巴斯克乳酪蛋糕 ＋ 美式咖啡',
-          '現烤可頌 ＋ 冰拿鐵',
-          '黑糖珍珠鮮奶（微冰）'
-        ]
-      },
-      dinner: {
-        time: '19:00',
-        emoji: '🌙',
-        shortName: '晚餐',
-        title: '🌙 晚餐選擇',
-        subtitle: '卸下一天的疲憊，好好享受溫暖的晚餐吧',
-        selected: '昆布小火鍋（多蔬菜少火鍋料）',
-        options: [
-          '昆布小火鍋（多蔬菜少火鍋料）',
-          '炙燒鮭魚丼飯 ＋ 味噌湯',
-          '水餃 10 顆 ＋ 酸辣湯',
-          '越式生春捲 ＋ 牛肉河粉',
-          '滷味拼盤（高麗菜、金針菇、豆腐）',
-          '藥燉排骨 ＋ 滷肉飯'
-        ]
-      }
+    const ORDER = ['breakfast', 'lunch', 'tea', 'dinner'];
+    let data = JSON.parse(localStorage.getItem('food_mini_v1')) || {
+      breakfast: { name: '🌅 早餐', time: '08:30', pick: '總匯三明治＋鮮奶茶', list: ['總匯三明治＋鮮奶茶', '起司蛋餅＋冰美式', '鮪魚吐司＋無糖豆漿', '日式飯糰＋熱拿鐵', '地瓜＋水煮蛋'] },
+      lunch:     { name: '☀️ 午餐', time: '12:00', pick: '舒肥雞胸健康餐盒', list: ['舒肥雞胸健康餐盒', '日式豚骨拉麵', '泰式打拋豬飯', '鮮蝦雲吞麵', '韓式泡菜豆腐鍋'] },
+      tea:       { name: '🧋 下午茶', time: '15:30', pick: '熟成紅茶微糖＋珍珠', list: ['熟成紅茶微糖＋珍珠', '四季春無糖去冰', '焦糖布丁＋熱紅茶', '巴斯克蛋糕＋美式', '現烤可頌＋拿鐵'] },
+      dinner:    { name: '🌙 晚餐', time: '19:00', pick: '昆布小火鍋', list: ['昆布小火鍋', '炙燒鮭魚丼飯', '水餃10顆＋酸辣湯', '越式牛肉河粉', '滷味拼盤'] }
     };
+    let tab = 'breakfast';
 
-    var mealData = JSON.parse(JSON.stringify(DEFAULT_MEALS));
-    try {
-      var saved = localStorage.getItem('myday_food_stable_v1');
-      if (saved) mealData = JSON.parse(saved);
-    } catch (e) {}
+    const save = () => localStorage.setItem('food_mini_v1', JSON.stringify(data));
+    const go = (t) => { tab = t; render(); };
 
-    var activeTab = 'breakfast';
-
-    function saveData() {
-      try {
-        localStorage.setItem('myday_food_stable_v1', JSON.stringify(mealData));
-      } catch (e) {}
+    function roll(k) {
+      const l = data[k].list;
+      if (l.length > 1) {
+        let next;
+        do { next = l[Math.floor(Math.random() * l.length)]; } while (next === data[k].pick);
+        data[k].pick = next;
+      }
+      save(); render();
     }
 
-    function switchTab(tabKey) {
-      activeTab = tabKey;
-      var allTabs = ['breakfast', 'lunch', 'tea', 'dinner', 'summary'];
-      for (var i = 0; i < allTabs.length; i++) {
-var k = allTabs[i];
-var btn = document.getElementById('tab-' + k);
-if (btn) {
-btn.className = (k === tabKey ? 'tab-active' : 'tab-inactive') +
-' flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl text-xs font-bold transition cursor-pointer';
-}
-}
-render();
-}
-function pickRandom(key) {
-var list = mealData[key].options;
-if (!list || list.length === 0) return;
-if (list.length === 1) {
-mealData[key].selected = list[0];
-} else {
-var next = list[0];
-do {
-next = list[Math.floor(Math.random() * list.length)];
-} while (next === mealData[key].selected);
-mealData[key].selected = next;
-}
-saveData();
-render();
-}
-function pickRandomCurrent() {
-if (activeTab !== 'summary') {
-pickRandom(activeTab);
-}
-}
-function goNextTab() {
-var idx = MEAL_ORDER.indexOf(activeTab);
-if (idx >= 0 && idx < MEAL_ORDER.length - 1) {
-switchTab(MEAL_ORDER[idx + 1]);
-} else {
-switchTab('summary');
-}
-}
-function rollAllAndSummary() {
-for (var i = 0; i < MEAL_ORDER.length; i++) {
-var k = MEAL_ORDER[i];
-var list = mealData[k].options;
-if (list && list.length > 0) {
-mealData[k].selected = list[Math.floor(Math.random() * list.length)];
-}
-}
-saveData();
-switchTab('summary');
-}
-function selectByIndex(idx) {
-var meal = mealData[activeTab];
-if (meal && meal.options[idx] !== undefined) {
-meal.selected = meal.options[idx];
-saveData();
-render();
-}
-}
-function removeByIndex(idx, event) {
-event.stopPropagation();
-var meal = mealData[activeTab];
-if (!meal) return;
-var removed = meal.options.splice(idx, 1)[0];
-if (meal.selected === removed) {
-meal.selected = meal.options.length > 0 ? meal.options[0] : '尚未選擇';
-}
-saveData();
-render();
-}
-function addNewOption() {
-var input = document.getElementById('newOptionInput');
-var val = input.value.trim();
-if (!val || activeTab === 'summary') return;
-var meal = mealData[activeTab];
-if (meal.options.indexOf(val) === -1) {
-meal.options.push(val);
-}
-meal.selected = val;
-input.value = '';
-saveData();
-render();
-}
-document.getElementById('newOptionInput').addEventListener('keydown', function(e) {
-if (e.key === 'Enter') addNewOption();
-});
-function resetDefaults() {
-mealData = JSON.parse(JSON.stringify(DEFAULT_MEALS));
-saveData();
-render();
-}
-function copyMenu() {
-var lines = ['📅 我的一天餐食清單'];
-for (var i = 0; i < MEAL_ORDER.length; i++) {
-var m = mealData[MEAL_ORDER[i]];
-lines.push(m.title + '（' + m.time + '）：' + m.selected);
-}
-if (navigator.clipboard) {
-navigator.clipboard.writeText(lines.join('\n')).then(function() {
-var btn = document.getElementById('copyBtn');
-btn.textContent = '✅ 已複製！';
-setTimeout(function() { btn.textContent = '📋 複製整天菜單'; }, 2000);
-});
-}
-}
-function render() {
-var singleView = document.getElementById('singleMealView');
-var summaryView = document.getElementById('summaryView');
-if (activeTab === 'summary') {
-singleView.classList.add('hidden');
-summaryView.classList.remove('hidden');
-var d = new Date();
-document.getElementById('todayDateText').textContent = '📅 ' + d.getFullYear() + ' 年 ' + (d.getMonth() + 1) + ' 月 ' + d.getDate() + ' 日';
-var html = '';
-for (var i = 0; i < MEAL_ORDER.length; i++) {
-var k = MEAL_ORDER[i];
-var m = mealData[k];
-html += '' +
-'' +
-'' +
-'' + m.title + '' +
-'' + m.time + '' +
-'' +
-'' + m.selected + '' +
-'' +
-'' +
-'🎲 重抽' +
-'進入頁面 ➔' +
-'' +
-'';
-}
-document.getElementById('summaryCards').innerHTML = html;
-return;
-}
-summaryView.classList.add('hidden');
-singleView.classList.remove('hidden');
-var meal = mealData[activeTab];
-var idx = MEAL_ORDER.indexOf(activeTab);
-document.getElementById('mealTimeBadge').textContent = '建議時段 ' + meal.time;
-document.getElementById('mealTitle').textContent = meal.title;
-document.getElementById('mealSubtitle').textContent = meal.subtitle;
-document.getElementById('mealStepBadge').textContent = '第 ' + (idx + 1) + ' / 4 餐';
-document.getElementById('selectedMealText').textContent = meal.selected;
-document.getElementById('listHeading').textContent = '🍱 我的' + meal.shortName + '口袋名單（共 ' + meal.options.length + ' 項）';
-document.getElementById('newOptionInput').placeholder = '輸入你想加入的' + meal.shortName + '選項...';
-var nextBtn = document.getElementById('nextMealBtn');
-if (idx < MEAL_ORDER.length - 1) {
-var nextMeal = mealData[MEAL_ORDER[idx + 1]];
-nextBtn.textContent = '決定好了，前往' + nextMeal.shortName + ' ' + nextMeal.emoji + ' ➔';
-} else {
-nextBtn.textContent = '查看今日完整菜單 📋 ➔';
-}
-var chipsHtml = '';
-for (var j = 0; j < meal.options.length; j++) {
-var opt = meal.options[j];
-var isSel = (opt === meal.selected);
-chipsHtml += '' +
-'' + (isSel ? '✔ ' : '') + opt + '' +
-'×' +
-'';
-}
-document.getElementById('optionsChips').innerHTML = chipsHtml;
-}
-render();
+    function rollAll() {
+      ORDER.forEach(k => { const l = data[k].list; if (l.length) data[k].pick = l[Math.floor(Math.random() * l.length)]; });
+      save(); go('summary');
+    }
+
+    function choose(i) { data[tab].pick = data[tab].list[i]; save(); render(); }
+
+    function del(i, e) {
+      e.stopPropagation();
+      const rm = data[tab].list.splice(i, 1);
+      if (data[tab].pick === rm) data[tab].pick = data[tab].list || '尚未選擇';
+      save(); render();
+    }
+
+    function add() {
+      const inp = document.getElementById('newInp');
+      const v = inp.value.trim();
+      if (!v) return;
+      if (!data[tab].list.includes(v)) data[tab].list.push(v);
+      data[tab].pick = v;
+      save(); render();
+    }
+
+    function copyAll() {
+      const txt = ORDER.map(k => `${data[k].name}（${data[k].time}）：${data[k].pick}`).join('\n');
+      navigator.clipboard.writeText(txt);
+      document.getElementById('cpBtn').textContent = '✅ 已複製！';
+    }
+
+    function render() {
+      const tabs = [...ORDER.map(k => ({ k, label: data[k].name })), { k: 'summary', label: '📋 總覽' }];
+      document.getElementById('navTabs').innerHTML = tabs.map(t =>
+        `<button onclick="go('${t.k}')" class="py-2 rounded-lg cursor-pointer ${tab === t.k ? 'btn-gold shadow-xs' : 'hover:bg-white/60'}">${t.label}</button>`
+      ).join('');
+
+      const app = document.getElementById('app');
+      if (tab === 'summary') {
+        app.innerHTML = `
+          <div class="card rounded-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center">
+              <h2 class="text-lg font-bold">📋 今日四餐最終決定</h2>
+              <button id="cpBtn" onclick="copyAll()" class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#ffd467] bg-white cursor-pointer">複製整天菜單</button>
+            </div>
+            ${ORDER.map(k => `
+              <div class="p-3.5 rounded-xl bg-[#ffd46728] flex justify-between items-center">
+                <div><span class="text-xs font-bold text-[#8a6814]">${data[k].name}（${data[k].time}）</span><p class="font-bold">${data[k].pick}</p></div>
+                <button onclick="roll('${k}')" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-white border border-[#ffd467] cursor-pointer">🎲 重抽</button>
+              </div>`).join('')}
+          </div>`;
+        return;
+      }
+
+      const m = data[tab];
+      const nextTab = ORDER[ORDER.indexOf(tab) + 1] || 'summary';
+      app.innerHTML = `
+        <div class="card rounded-2xl p-6 text-center space-y-4 mb-5">
+          <span class="text-xs font-bold bg-[#ffd46745] px-3 py-1 rounded-full">建議時段 ${m.time}</span>
+          <h2 class="text-2xl font-bold">${m.name}選擇</h2>
+          <div class="py-5 px-4 rounded-xl bg-[#ffd46728] border border-dashed border-[#d9a726] text-xl font-bold">${m.pick}</div>
+          <div class="flex justify-center gap-3">
+            <button onclick="roll('${tab}')" class="btn-gold font-bold text-sm px-6 py-3 rounded-xl cursor-pointer">🎲 幫我隨機抽</button>
+            <button onclick="go('${nextTab}')" class="bg-white border border-[#ffd467] font-bold text-sm px-5 py-3 rounded-xl cursor-pointer">下一餐 ➔</button>
+          </div>
+        </div>
+        <div class="card rounded-2xl p-5 space-y-4">
+          <h3 class="font-bold text-sm">🍱 口袋名單（點擊直接選定）</h3>
+          <div class="flex flex-wrap gap-2">
+            ${m.list.map((item, i) => `
+              <div onclick="choose(${i})" class="px-3 py-1.5 rounded-full text-xs border cursor-pointer flex items-center gap-1.5 ${item === m.pick ? 'btn-gold border-[#d9a726] font-bold' : 'bg-white border-[#ffd46788]'}">
+                <span>${item === m.pick ? '✔ ' : ''}${item}</span>
+                <button onclick="del(${i}, event)" class="text-red-500 font-bold ml-1">×</button>
+              </div>`).join('')}
+          </div>
+          <div class="flex gap-2">
+            <input id="newInp" onkeydown="if(event.key==='Enter')add()" placeholder="新增想吃的項目..." class="flex-1 border border-[#ffd467] rounded-lg px-3 py-2 text-xs bg-white">
+            <button onclick="add()" class="bg-[#4a3b18] text-white text-xs font-bold px-4 py-2 rounded-lg cursor-pointer">＋ 新增</button>
+          </div>
+        </div>`;
+    }
+    render();
+  </script>
+</body>
+</html>
