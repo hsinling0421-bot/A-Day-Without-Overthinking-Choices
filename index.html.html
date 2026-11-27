@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>告別選擇障礙</title>
+  <meta property="og:title" content="告別選擇障礙" />
+  <meta property="og:description" content="今天吃什麼、去哪裡？一鍵幫你決定整天計畫" />
+  <meta property="og:type" content="website" />
   <link href="https://googleapis.com" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -36,6 +39,7 @@
   <div class="wrap">
     <header><span class="tag">TODAY'S PLAN</span><h1>告別選擇障礙</h1><button onclick="rollAll()" class="btn-g">今日隨機決定</button><nav id="nav" class="nav"></nav></header>
     <main id="app"></main>
+    <p style="font-size:12px;color:#8c6d32;margin-top:20px;">小提示：點選各分頁就能自由新增或刪除自己喜愛的口袋名單喔</p>
   </div>
   <script>
     const INIT = {
