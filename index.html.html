@@ -4,295 +4,95 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>告別選擇障礙</title>
-  <link rel="preconnect" href="https://googleapis.com">
-  <link rel="preconnect" href="https://gstatic.com" crossorigin>
-  <link href="https://googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://googleapis.com" rel="stylesheet">
   <style>
-    @font-face {
-      font-family: 'SetoFontLocal';
-      src: url('https://jsdelivr.net') format('woff2');
-      font-display: swap;
-    }
+    @font-face { font-family: 'SetoLocal'; src: url('https://jsdelivr.net') format('woff2'); font-display: swap; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'SetoFontLocal', 'Yomogi', 'Zen Maru Gothic', sans-serif;
-      font-weight: 400;
-      background-color: #ffd46728;
-      background-image: radial-gradient(#e5b83b38 2px, transparent 2px);
-      background-size: 28px 28px;
-      color: #3b2d14;
-      text-align: center;
-      min-height: 100vh;
-      padding: 36px 16px 100px;
-    }
-    .container { max-width: 460px; margin: 0 auto; }
-    .badge-top {
-      display: inline-block;
-      font-size: 11px;
-      letter-spacing: 2px;
-      padding: 4px 16px;
-      background: #fff;
-      border: 2px solid #3b2d14;
-      border-radius: 999px;
-      margin-bottom: 10px;
-    }
-    /* 主標題加粗 */
-    h1.main-title {
-      font-size: 30px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-shadow: 0.5px 0 0 #3b2d14;
-      margin-bottom: 14px;
-    }
-    .card {
-      background: #ffffff;
-      border: 2px solid #3b2d14;
-      border-radius: 28px;
-      box-shadow: 5px 5px 0 #ffd467;
-      padding: 22px 20px;
-      margin-bottom: 18px;
-    }
-    /* 餐別標題加粗 */
-    .meal-title {
-      display: inline-block;
-      font-size: 15px;
-      font-weight: 700;
-      text-shadow: 0.4px 0 0 #3b2d14;
-      background: #ffd46766;
-      border: 1.5px solid #3b2d14;
-      padding: 4px 18px;
-      border-radius: 999px;
-      margin-bottom: 14px;
-    }
-    .pick-box {
-      background: #ffd46728;
-      border: 2px dashed #3b2d14;
-      border-radius: 20px;
-      padding: 20px 14px;
-      font-size: 21px;
-      font-weight: 400;
-      margin-bottom: 16px;
-    }
-    .btn-row { display: flex; justify-content: center; gap: 10px; }
-    button {
-      font-family: inherit;
-      cursor: pointer;
-      border: 2px solid #3b2d14;
-      border-radius: 999px;
-      transition: transform 0.1s ease;
-    }
+    body { font-family: 'SetoLocal', 'Yomogi', 'Zen Maru Gothic', sans-serif; background: #ffd46728 radial-gradient(#e5b83b38 2px, transparent 2px) 0 0 / 28px 28px; color: #3b2d14; text-align: center; min-height: 100vh; padding: 34px 16px 130px; }
+    .wrap { max-width: 460px; margin: 0 auto; }
+    .tag { display: inline-block; font-size: 11px; letter-spacing: 2px; padding: 4px 16px; background: #fff; border: 2px solid #3b2d14; border-radius: 999px; margin-bottom: 10px; }
+    h1 { font-size: 30px; font-weight: 700; letter-spacing: 3px; text-shadow: 0.5px 0 0 #3b2d14; margin-bottom: 14px; }
+    .card { background: #fff; border: 2px solid #3b2d14; border-radius: 28px; box-shadow: 5px 5px 0 #ffd467; padding: 20px 18px; margin-bottom: 16px; }
+    .pill { display: inline-block; font-size: 15px; font-weight: 700; text-shadow: 0.4px 0 0 #3b2d14; background: #ffd46766; border: 1.5px solid #3b2d14; padding: 4px 18px; border-radius: 999px; margin-bottom: 14px; }
+    .pick { background: #ffd46728; border: 2px dashed #3b2d14; border-radius: 20px; padding: 18px 12px; font-size: 20px; margin-bottom: 16px; }
+    .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    button { font-family: inherit; cursor: pointer; border: 2px solid #3b2d14; border-radius: 999px; }
     button:active { transform: translate(2px, 2px); }
-    .btn-gold {
-      background: #ffd467;
-      color: #3b2d14;
-      font-size: 14px;
-      padding: 9px 22px;
-      box-shadow: 3px 3px 0 #3b2d14;
-    }
-    .btn-white {
-      background: #fffdf5;
-      color: #3b2d14;
-      font-size: 14px;
-      padding: 9px 20px;
-    }
-    .section-sub {
-      font-size: 14px;
-      color: #6e5323;
-      margin-bottom: 14px;
-    }
-    /* 整齊雙排膠囊清單 */
-    .chip-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .chip {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      border: 1.8px solid #3b2d14;
-      border-radius: 999px;
-      font-size: 13px;
-      background: #ffffff;
-      cursor: pointer;
-      text-align: center;
-    }
-    .chip.active { background: #ffd467; }
-    .chip-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .chip-del {
-      border: none;
-      background: transparent;
-      font-size: 15px;
-      color: #8c6d32;
-      padding: 0 2px 0 6px;
-      line-height: 1;
-    }
-    .chip-del:hover { color: #d9381e; }
-    /* 新增輸入列 */
-    .add-row { display: flex; gap: 8px; align-items: center; }
-    .add-input {
-      flex: 1;
-      font-family: inherit;
-      font-size: 13px;
-      text-align: center;
-      padding: 9px 14px;
-      border: 2px solid #3b2d14;
-      border-radius: 999px;
-      background: #fff;
-      outline: none;
-    }
-    /* 右下角圓形懸浮分頁 */
-    .nav-tabs {
-      position: fixed;
-      bottom: 18px;
-      right: 18px;
-      z-index: 30;
-      display: flex;
-      gap: 8px;
-    }
-    .nav-circle {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      font-size: 12px;
-      background: #ffffff;
-      color: #3b2d14;
-      border: 2px solid #3b2d14;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-    }
-    .nav-circle.active {
-      background: #ffd467;
-      font-weight: 700;
-      box-shadow: 3px 3px 0 #3b2d14;
-      transform: translateY(-3px);
-    }
-    @media (max-width: 380px) {
-      .chip-grid { grid-template-columns: 1fr; }
-    }
+    .btn-g { background: #ffd467; color: #3b2d14; font-size: 14px; padding: 8px 20px; box-shadow: 3px 3px 0 #3b2d14; }
+    .btn-w { background: #fffdf5; color: #3b2d14; font-size: 14px; padding: 8px 18px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; margin-top: 12px; }
+    .chip { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border: 1.8px solid #3b2d14; border-radius: 999px; font-size: 13px; background: #fff; cursor: pointer; }
+    .chip.on { background: #ffd467; }
+    .chip span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chip b { font-weight: 400; color: #8c6d32; padding-left: 6px; font-size: 15px; }
+    .inp-row { display: flex; gap: 8px; }
+    input { flex: 1; font-family: inherit; font-size: 13px; text-align: center; padding: 9px 14px; border: 2px solid #3b2d14; border-radius: 999px; outline: none; }
+    .nav { position: fixed; bottom: 16px; right: 16px; z-index: 30; display: flex; flex-wrap: wrap-reverse; justify-content: flex-end; max-width: calc(100vw - 32px); gap: 8px; }
+    .nav button { width: 52px; height: 52px; border-radius: 50%; font-size: 12px; background: #fff; display: flex; align-items: center; justify-content: center; padding: 2px; line-height: 1.1; }
+    .nav button.on { background: #ffd467; font-weight: 700; box-shadow: 3px 3px 0 #3b2d14; transform: translateY(-3px); }
+    @media (max-width: 380px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-
-  <div class="container">
-    <header style="margin-bottom: 22px;">
-      <span class="badge-top">TODAY'S MENU</span>
-      <h1 class="main-title">告別選擇障礙</h1>
-      <button onclick="rollAll()" class="btn-gold">今日隨機菜單</button>
+  <div class="wrap">
+    <header style="margin-bottom:20px;">
+      <span class="tag">TODAY'S PLAN</span>
+      <h1>告別選擇障礙</h1>
+      <button onclick="rollAll()" class="btn-g">今日隨機決定</button>
     </header>
-
     <main id="app"></main>
   </div>
-
-  <nav id="navTabs" class="nav-tabs"></nav>
+  <nav id="nav" class="nav"></nav>
 
   <script>
-    const ORDER = ['breakfast', 'lunch', 'tea', 'dinner'];
-    let data = JSON.parse(localStorage.getItem('food_seto_v1')) || {
-      breakfast: { name: '早餐', pick: '總匯三明治＋鮮奶茶', list: ['總匯三明治＋鮮奶茶', '起司蛋餅＋冰美式', '鮪魚吐司＋無糖豆漿', '日式飯糰＋熱拿鐵', '地瓜＋水煮蛋'] },
-      lunch:     { name: '午餐', pick: '舒肥雞胸健康餐盒', list: ['舒肥雞胸健康餐盒', '日式豚骨拉麵', '泰式打拋豬飯', '鮮蝦雲吞麵', '韓式泡菜豆腐鍋'] },
-      tea:       { name: '下午茶', pick: '熟成紅茶微糖＋珍珠', list: ['熟成紅茶微糖＋珍珠', '四季春無糖去冰', '焦糖布丁＋熱紅茶', '巴斯克蛋糕＋美式', '現烤可頌＋拿鐵'] },
-      dinner:    { name: '晚餐', pick: '昆布小火鍋', list: ['昆布小火鍋', '炙燒鮭魚丼飯', '水餃10顆＋酸辣湯', '越式牛肉河粉', '滷味拼盤'] }
+    const INIT = {
+      order: ['breakfast', 'lunch', 'tea', 'dinner', 'trip'],
+      items: {
+        breakfast: { name: '早餐', pick: '總匯三明治＋鮮奶茶', list: ['總匯三明治＋鮮奶茶', '起司蛋餅＋冰美式', '鮪魚吐司＋無糖豆漿', '日式飯糰＋熱拿鐵', '地瓜＋水煮蛋'] },
+        lunch:     { name: '午餐', pick: '舒肥雞胸健康餐盒', list: ['舒肥雞胸健康餐盒', '日式豚骨拉麵', '泰式打拋豬飯', '鮮蝦雲吞麵', '韓式泡菜豆腐鍋'] },
+        tea:       { name: '下午茶', pick: '熟成紅茶微糖＋珍珠', list: ['熟成紅茶微糖＋珍珠', '四季春無糖去冰', '焦糖布丁＋熱紅茶', '巴斯克蛋糕＋美式', '現烤可頌＋拿鐵'] },
+        dinner:    { name: '晚餐', pick: '昆布小火鍋', list: ['昆布小火鍋', '炙燒鮭魚丼飯', '水餃10顆＋酸辣湯', '越式牛肉河粉', '滷味拼盤'] },
+        trip:      { name: '行程', pick: '咖啡廳看書放空', list: ['咖啡廳看書放空', '散步看電影', '逛街買生活小物', '居家伸展放鬆', '找間桌遊店玩一場', '泡澡追劇休息'] }
+      }
     };
-    let tab = 'breakfast';
-
-    const save = () => localStorage.setItem('food_seto_v1', JSON.stringify(data));
-    const go = (t) => { tab = t; render(); };
+    let s = JSON.parse(localStorage.getItem('plan_mini_v2')) || INIT;
+    let tab = s.order[0] || 'summary';
+    const save = () => localStorage.setItem('plan_mini_v2', JSON.stringify(s));
+    const go = t => { tab = t; render(); };
 
     function roll(k) {
-      const l = data[k].list;
-      if (l.length > 1) {
-        let next;
-        do { next = l[Math.floor(Math.random() * l.length)]; } while (next === data[k].pick);
-        data[k].pick = next;
-      }
+      const l = s.items[k].list;
+      if (l.length > 1) { let n; do { n = l[Math.floor(Math.random() * l.length)]; } while (n === s.items[k].pick); s.items[k].pick = n; }
       save(); render();
     }
-
-    function rollAll() {
-      ORDER.forEach(k => { const l = data[k].list; if (l.length) data[k].pick = l[Math.floor(Math.random() * l.length)]; });
-      save(); go('summary');
-    }
-
-    function choose(i) { data[tab].pick = data[tab].list[i]; save(); render(); }
-
-    function del(i, e) {
-      e.stopPropagation();
-      const rm = data[tab].list.splice(i, 1);
-      if (data[tab].pick === rm) data[tab].pick = data[tab].list || '尚未選擇';
-      save(); render();
-    }
-
-    function add() {
-      const inp = document.getElementById('newInp');
-      const v = inp.value.trim();
-      if (!v) return;
-      if (!data[tab].list.includes(v)) data[tab].list.push(v);
-      data[tab].pick = v;
-      save(); render();
-    }
-
-    function copyAll() {
-      const txt = '今日隨機菜單：\n' + ORDER.map(k => `${data[k].name}：${data[k].pick}`).join('\n');
-      navigator.clipboard.writeText(txt);
-      document.getElementById('cpBtn').textContent = '已複製完成';
-    }
+    function rollAll() { s.order.forEach(k => { const l = s.items[k].list; if (l.length) s.items[k].pick = l[Math.floor(Math.random() * l.length)]; }); save(); go('summary'); }
+    function pick(i) { s.items[tab].pick = s.items[tab].list[i]; save(); render(); }
+    function del(i, e) { e.stopPropagation(); const r = s.items[tab].list.splice(i, 1)[0]; if (s.items[tab].pick === r) s.items[tab].pick = s.items[tab].list[0] || '尚未選擇'; save(); render(); }
+    function add() { const inp = document.getElementById('inp'), v = inp.value.trim(); if (!v) return; if (!s.items[tab].list.includes(v)) s.items[tab].list.push(v); s.items[tab].pick = v; save(); render(); }
+    function addCat() { const inp = document.getElementById('catInp'), n = inp.value.trim(); if (!n) return; const id = 'c' + Date.now(); s.order.push(id); s.items[id] = { name: n, pick: '還沒加入選項', list: [] }; save(); go(id); }
+    function delCat(k) { if (s.order.length <= 1) return; s.order = s.order.filter(x => x !== k); delete s.items[k]; save(); go(s.order[0]); }
+    function copy() { navigator.clipboard.writeText('今日隨機決定：\n' + s.order.map(k => `${s.items[k].name}：${s.items[k].pick}`).join('\n')); document.getElementById('cp').textContent = '已複製完成'; }
 
     function render() {
-      const tabs = [...ORDER.map(k => ({ k, label: data[k].name })), { k: 'summary', label: '總覽' }];
-      document.getElementById('navTabs').innerHTML = tabs.map(t =>
-        `<button onclick="go('${t.k}')" class="nav-circle ${tab === t.k ? 'active' : ''}">${t.label}</button>`
-      ).join('');
-
+      const tabs = [...s.order.map(k => ({ k, l: s.items[k].name })), { k: 'summary', l: '總覽' }, { k: 'add', l: '＋' }];
+      document.getElementById('nav').innerHTML = tabs.map(t => `<button onclick="go('${t.k}')" class="${tab === t.k ? 'on' : ''}">${t.l}</button>`).join('');
       const app = document.getElementById('app');
-      if (tab === 'summary') {
-        app.innerHTML = `
-          <div class="card">
-            <h2 class="meal-title" style="margin-bottom:12px;">今日隨機菜單總覽</h2><br>
-            <button id="cpBtn" onclick="copyAll()" class="btn-white" style="font-size:13px;padding:6px 18px;">複製整天菜單</button>
-          </div>
-          ${ORDER.map(k => `
-            <div class="card">
-              <span class="meal-title">${data[k].name}</span>
-              <p style="font-size:19px;margin:4px 0 14px;">${data[k].pick}</p>
-              <div class="btn-row">
-                <button onclick="roll('${k}')" class="btn-gold" style="font-size:13px;padding:6px 18px;">重抽</button>
-                <button onclick="go('${k}')" class="btn-white" style="font-size:13px;padding:6px 18px;">編輯名單</button>
-              </div>
-            </div>`).join('')}`;
+
+      if (tab === 'add') {
+        app.innerHTML = `<div class="card"><span class="pill">新增類別</span><p style="font-size:14px;margin-bottom:14px;">輸入你想增加的行程或生活類別</p><div class="inp-row"><input id="catInp" onkeydown="if(event.key==='Enter')addCat()" placeholder="例如：宵夜、運動、週末去處..."><button onclick="addCat()" class="btn-g">建立</button></div></div>`;
         return;
       }
-
-      const m = data[tab];
-      const nextTab = ORDER[ORDER.indexOf(tab) + 1] || 'summary';
+      if (tab === 'summary') {
+        app.innerHTML = `<div class="card"><span class="pill">今日隨機決定總覽</span><br><button id="cp" onclick="copy()" class="btn-w" style="font-size:13px;padding:6px 18px;">複製整天清單</button></div>` +
+          s.order.map(k => `<div class="card"><span class="pill">${s.items[k].name}</span><p style="font-size:19px;margin:4px 0 14px;">${s.items[k].pick}</p><div class="row"><button onclick="roll('${k}')" class="btn-g" style="font-size:13px;padding:6px 18px;">重抽</button><button onclick="go('${k}')" class="btn-w" style="font-size:13px;padding:6px 18px;">編輯名單</button></div></div>`).join('');
+        return;
+      }
+      const m = s.items[tab], next = s.order[s.order.indexOf(tab) + 1] || 'summary';
       app.innerHTML = `
-        <div class="card">
-          <span class="meal-title">${m.name}</span>
-          <div class="pick-box">${m.pick}</div>
-          <div class="btn-row">
-            <button onclick="roll('${tab}')" class="btn-gold">幫我抽一個</button>
-            <button onclick="go('${nextTab}')" class="btn-white">下一餐</button>
-          </div>
-        </div>
-        <div class="card">
-          <h3 class="section-sub">我的${m.name}口袋名單</h3>
-          <div class="chip-grid">
-            ${m.list.map((item, i) => `
-              <div onclick="choose(${i})" class="chip ${item === m.pick ? 'active' : ''}">
-                <span class="chip-text">${item}</span>
-                <button onclick="del(${i}, event)" class="chip-del">×</button>
-              </div>`).join('')}
-          </div>
-        </div>
-        <div class="card" style="padding:14px 16px;">
-          <div class="add-row">
-            <input id="newInp" onkeydown="if(event.key==='Enter')add()" placeholder="新增想吃的${m.name}..." class="add-input">
-            <button onclick="add()" class="btn-gold" style="padding:8px 18px;font-size:13px;">加入</button>
-          </div>
-        </div>`;
+        <div class="card"><span class="pill">${m.name}</span><div class="pick">${m.pick}</div><div class="row"><button onclick="roll('${tab}')" class="btn-g">幫我抽一個</button><button onclick="go('${next}')" class="btn-w">下一個</button></div></div>
+        <div class="card"><p style="font-size:14px;color:#6e5323;">我的${m.name}口袋名單</p><div class="grid">${m.list.map((it, i) => `<div onclick="pick(${i})" class="chip ${it === m.pick ? 'on' : ''}"><span>${it}</span><b onclick="del(${i},event)">×</b></div>`).join('')}</div></div>
+        <div class="card" style="padding:14px 16px;"><div class="inp-row"><input id="inp" onkeydown="if(event.key==='Enter')add()" placeholder="新增想排的${m.name}..."><button onclick="add()" class="btn-g">加入</button></div></div>
+        ${s.order.length > 1 ? `<button onclick="delCat('${tab}')" style="border:none;background:none;font-size:12px;color:#8c6d32;text-decoration:underline;">刪除「${m.name}」類別</button>` : ''}`;
     }
     render();
   </script>
