@@ -3,191 +3,217 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>我的一天｜專屬日常與跟練選擇器</title>
+  <title>我的一天｜告別選擇障礙</title>
   <script src="https://tailwindcss.com"></script>
   <link href="https://googleapis.com" rel="stylesheet">
   <style>
-    body { font-family: 'Noto Sans TC', sans-serif; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #ffd46728;
+      color: #4a3b18;
+    }
+    .brand-card {
+      background-color: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid #ffd46766;
+    }
+    .brand-pill {
+      background-color: #ffd46745;
+      color: #6b4e09;
+    }
+    .brand-btn {
+      background-color: #ffd467;
+      color: #3d2e08;
+    }
+    .brand-btn:hover {
+      background-color: #f7c648;
+    }
   </style>
 </head>
-<body class="bg-stone-50 text-stone-800 min-h-screen">
+<body class="min-h-screen pb-14">
 
-  <!-- 頂部品牌區 -->
-  <header class="bg-white border-b border-stone-200 sticky top-0 z-10">
-    <div class="max-w-3xl mx-auto px-5 py-4 flex justify-between items-center">
+  <header class="sticky top-0 z-20 border-b border-[#ffd46766] bg-[#fffdf7]/90 backdrop-blur-md">
+    <div class="max-w-3xl mx-auto px-5 py-4 flex flex-wrap justify-between items-center gap-3">
       <div>
-        <span class="text-xs tracking-widest text-rose-500 font-bold uppercase">MY DAY PLANNER</span>
-        <h1 class="text-xl font-bold text-stone-900">我的一天｜今日狀態選擇</h1>
+        <span class="text-xs font-bold tracking-widest uppercase text-[#a67c14]">MY DAY FOOD PICKER</span>
+        <h1 class="text-xl font-bold text-[#3d2e08]">我的一天｜告別選擇障礙</h1>
       </div>
-      <div class="text-right">
-        <span id="todayDate" class="text-xs text-stone-500 block"></span>
-        <span id="progressBadge" class="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full">完成度 0%</span>
-      </div>
+      <button onclick="rollAll()" class="brand-btn font-bold text-sm px-5 py-2.5 rounded-full shadow-sm transition active:scale-95 cursor-pointer">
+        ✨ 一鍵幫我決定整天吃什麼
+      </button>
     </div>
   </header>
 
-  <main class="max-w-3xl mx-auto px-5 py-8 space-y-8">
-
-    <!-- 01 選擇我的一天模式 -->
-    <section>
-      <h2 class="text-sm font-bold text-stone-500 mb-3">01 選擇今天適合你的節奏</h2>
-      <div id="modeButtons" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+  <main class="max-w-3xl mx-auto px-5 pt-6 space-y-6">
+    <section class="brand-card rounded-2xl p-5 shadow-sm">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="font-bold text-base text-[#3d2e08]">📅 今日餐食決定清單</h2>
+        <span class="text-xs text-[#8a6814]">不滿意可點單項「換一個」或直接點下方選項</span>
+      </div>
+      <div id="summaryGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
     </section>
 
-    <!-- 02 今日推薦時段與清單 -->
-    <section class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
-      <div class="flex flex-wrap justify-between items-start gap-2 border-b border-stone-100 pb-4 mb-5">
-        <div>
-          <span id="modeTag" class="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-md"></span>
-          <h3 id="modeTitle" class="text-xl font-bold text-stone-900 mt-2"></h3>
-          <p id="modeDesc" class="text-sm text-stone-500 mt-1"></p>
-        </div>
-        <button onclick="resetToday()" class="text-xs text-stone-400 hover:text-stone-700 underline">重設今日勾選</button>
-      </div>
-
-      <!-- 行程列表 -->
-      <div id="taskList" class="space-y-3"></div>
-
-      <!-- 自訂新增今日項目 -->
-      <div class="mt-6 pt-4 border-t border-stone-100 flex gap-2">
-        <input id="customTime" type="text" placeholder="時段（如 20:00）" class="w-28 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
-        <input id="customTask" type="text" placeholder="加入你想在今天完成的事..." class="flex-1 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
-        <button onclick="addCustomTask()" class="bg-stone-900 hover:bg-stone-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">新增</button>
-      </div>
-    </section>
-
+    <section id="mealsContainer" class="space-y-5"></section>
   </main>
 
   <script>
-    const DAY_MODES = {
-      busy: {
-        name: '忙碌工作日',
-        subtitle: '碎片時間 15 分鐘高效啟動',
-        tag: '低負擔・高效率',
-        desc: '適合行程滿檔的日子，用最短時間維持身體活動與生活節奏。',
-        tasks: [
-          { id: 'b1', time: '08:00', title: '晨間肩頸伸展 5 分鐘', note: '喚醒身體、改善久坐僵硬', done: false },
-          { id: 'b2', time: '12:30', title: '餐後散步 10 分鐘', note: '幫助消化、穩定午後精神', done: false },
-          { id: 'b3', time: '19:30', title: '居家核心跟練 10 分鐘', note: '無跳躍動作，下班無壓力完成', done: false },
-          { id: 'b4', time: '22:30', title: '睡前腿部放鬆與深呼吸', note: '放下手機，準備進入休息狀態', done: false }
+    const DEFAULT_MEALS = {
+      breakfast: {
+        title: '🌅 早餐選擇',
+        tag: '開啟活力',
+        selected: '總匯三明治 ＋ 無糖鮮奶茶',
+        options: [
+          '總匯三明治 ＋ 無糖鮮奶茶',
+          '起司蛋餅 ＋ 冰美式咖啡',
+          '鮪魚玉米吐司 ＋ 無糖豆漿',
+          '日式飯糰 ＋ 熱拿鐵',
+          '地瓜 ＋ 水煮蛋 ＋ 燕麥奶'
         ]
       },
-      active: {
-        name: '充實活力日',
-        subtitle: '完整訓練與自律生活節奏',
-        tag: '進階跟練・狀態滿分',
-        desc: '精神與時間充足時，給自己一套完整的運動與專注安排。',
-        tasks: [
-          { id: 'a1', time: '08:30', title: '溫水補水 ＋ 營養早餐', note: '補充蛋白質與優質碳水', done: false },
-          { id: 'a2', time: '10:30', title: '全身燃脂與肌力跟練 25 分鐘', note: '包含熱身、主訓練與收操', done: false },
-          { id: 'a3', time: '15:00', title: '下午茶無糖飲品與伸展', note: '遠離螢幕休息 10 分鐘', done: false },
-          { id: 'a4', time: '21:00', title: '泡沫軸肌筋膜放鬆 15 分鐘', note: '舒緩肌肉緊繃、提升睡眠品質', done: false }
+      lunch: {
+        title: '☀️ 午餐選擇',
+        tag: '飽足能量',
+        selected: '舒肥雞胸健康餐盒',
+        options: [
+          '舒肥雞胸健康餐盒',
+          '日式豚骨拉麵',
+          '泰式打拋豬飯 ＋ 荷包蛋',
+          '鮮蝦雲吞麵 ＋ 燙青菜',
+          '韓式泡菜豆腐鍋',
+          '義大利青醬雞肉麵'
         ]
       },
-      rest: {
-        name: '療癒修復日',
-        subtitle: '放慢腳步、溫柔照顧身心',
-        tag: '低強度・身心充電',
-        desc: '生理期、疲憊或週末想徹底放鬆時，以舒緩伸展代替高強度訓練。',
-        tasks: [
-          { id: 'r1', time: '09:30', title: '自然醒 ＋ 陽台日光伸展', note: '不設鬧鐘壓力，慢慢喚醒身體', done: false },
-          { id: 'r2', time: '14:00', title: '全身柔軟度舒緩跟練 15 分鐘', note: '開肩、開髖、釋放背部壓力', done: false },
-          { id: 'r3', time: '17:00', title: '散步或享受一杯熱花草茶', note: '留一段純粹屬於自己的空白時間', done: false },
-          { id: 'r4', time: '22:00', title: '泡腳或溫熱敷肩頸 10 分鐘', note: '促進循環，早點休息', done: false }
+      tea: {
+        title: '🧋 下午茶選擇',
+        tag: '療癒充電',
+        selected: '熟成紅茶微糖少冰 ＋ 白玉珍珠',
+        options: [
+          '熟成紅茶微糖少冰 ＋ 白玉珍珠',
+          '四季春青茶無糖去冰',
+          '焦糖布丁 ＋ 熱紅茶',
+          '巴斯克乳酪蛋糕 ＋ 美式咖啡',
+          '現烤可頌 ＋ 冰拿鐵'
+        ]
+      },
+      dinner: {
+        title: '🌙 晚餐選擇',
+        tag: '放鬆收尾',
+        selected: '昆布小火鍋（多蔬菜少火鍋料）',
+        options: [
+          '昆布小火鍋（多蔬菜少火鍋料）',
+          '炙燒鮭魚丼飯 ＋ 味噌湯',
+          '水餃 10 顆 ＋ 酸辣湯',
+          '越式生春捲 ＋ 牛肉河粉',
+          '滷味拼盤（高麗菜、金針菇、豆腐）'
         ]
       }
     };
 
-    let currentMode = localStorage.getItem('myday_mode') || 'busy';
-    let savedData = JSON.parse(localStorage.getItem('myday_data')) || DAY_MODES;
+    let mealData = JSON.parse(localStorage.getItem('myday_food_v1')) || DEFAULT_MEALS;
 
-    document.getElementById('todayDate').textContent = new Date().toLocaleDateString('zh-TW', {
-      year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
-    });
-
-    function saveState() {
-      localStorage.setItem('myday_mode', currentMode);
-      localStorage.setItem('myday_data', JSON.stringify(savedData));
+    function saveData() {
+      localStorage.setItem('myday_food_v1', JSON.stringify(mealData));
     }
 
-    function selectMode(modeKey) {
-      currentMode = modeKey;
-      saveState();
+    function pickRandom(key) {
+      const list = mealData[key].options;
+      if (!list.length) return;
+      if (list.length === 1) {
+        mealData[key].selected = list[0];
+      } else {
+        let next;
+        do {
+          next = list[Math.floor(Math.random() * list.length)];
+        } while (next === mealData[key].selected);
+        mealData[key].selected = next;
+      }
+      saveData();
       render();
     }
 
-    function toggleTask(taskId) {
-      const list = savedData[currentMode].tasks;
-      const item = list.find(t => t.id === taskId);
-      if (item) item.done = !item.done;
-      saveState();
+    function rollAll() {
+      Object.keys(mealData).forEach(key => pickRandom(key));
+    }
+
+    function selectManual(key, item) {
+      mealData[key].selected = item;
+      saveData();
       render();
     }
 
-    function addCustomTask() {
-      const timeVal = document.getElementById('customTime').value.trim() || '彈性時段';
-      const titleVal = document.getElementById('customTask').value.trim();
-      if (!titleVal) return;
-      savedData[currentMode].tasks.push({
-        id: 'c_' + Date.now(),
-        time: timeVal,
-        title: titleVal,
-        note: '自訂今日項目',
-        done: false
-      });
-      document.getElementById('customTime').value = '';
-      document.getElementById('customTask').value = '';
-      saveState();
+    function addOption(key) {
+      const input = document.getElementById(`input_${key}`);
+      const val = input.value.trim();
+      if (!val) return;
+      if (!mealData[key].options.includes(val)) {
+        mealData[key].options.push(val);
+      }
+      mealData[key].selected = val;
+      input.value = '';
+      saveData();
       render();
     }
 
-    function resetToday() {
-      savedData[currentMode].tasks.forEach(t => t.done = false);
-      saveState();
+    function removeOption(key, index, event) {
+      event.stopPropagation();
+      const removed = mealData[key].options.splice(index, 1)[0];
+      if (mealData[key].selected === removed) {
+        mealData[key].selected = mealData[key].options[0] || '尚未選擇';
+      }
+      saveData();
       render();
     }
 
     function render() {
-      // 渲染上方模式選擇卡片
-      const btnWrap = document.getElementById('modeButtons');
-      btnWrap.innerHTML = Object.entries(savedData).map(([key, info]) => {
-        const active = key === currentMode;
-        return `
-          <button onclick="selectMode('${key}')" class="text-left p-4 rounded-xl border transition cursor-pointer ${
-            active
-              ? 'bg-rose-500 text-white border-rose-500 shadow-sm'
-              : 'bg-white text-stone-800 border-stone-200 hover:border-rose-300'
-          }">
-            <div class="font-bold text-base">${info.name}</div>
-            <div class="text-xs mt-1 ${active ? 'text-rose-100' : 'text-stone-500'}">${info.subtitle}</div>
-          </button>
-        `;
-      }).join('');
-
-      // 渲染當前模式的清單
-      const modeObj = savedData[currentMode];
-      document.getElementById('modeTag').textContent = modeObj.tag;
-      document.getElementById('modeTitle').textContent = modeObj.name;
-      document.getElementById('modeDesc').textContent = modeObj.desc;
-
-      const doneCount = modeObj.tasks.filter(t => t.done).length;
-      const percent = modeObj.tasks.length ? Math.round((doneCount / modeObj.tasks.length) * 100) : 0;
-      document.getElementById('progressBadge').textContent = `完成度 ${percent}%`;
-
-      const listWrap = document.getElementById('taskList');
-      listWrap.innerHTML = modeObj.tasks.map(task => `
-        <label class="flex items-start gap-3 p-3.5 rounded-xl border transition cursor-pointer ${
-          task.done ? 'bg-stone-50 border-stone-200 opacity-65' : 'bg-white border-stone-200 hover:border-rose-300'
-        }">
-          <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask('${task.id}')" class="mt-1 w-4 h-4 accent-rose-500 cursor-pointer">
-          <div class="flex-1">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded">${task.time}</span>
-              <span class="font-bold text-sm ${task.done ? 'line-through text-stone-400' : 'text-stone-900'}">${task.title}</span>
-            </div>
-            <p class="text-xs text-stone-500 mt-1">${task.note}</p>
+      const summaryWrap = document.getElementById('summaryGrid');
+      summaryWrap.innerHTML = Object.entries(mealData).map(([key, meal]) => `
+        <div class="rounded-xl p-3.5 bg-[#ffd46728] border border-[#ffd46788] flex justify-between items-center gap-2">
+          <div>
+            <span class="text-xs font-bold text-[#8a6814] block">${meal.title}</span>
+            <span class="font-bold text-sm text-[#3d2e08] mt-0.5 block">${meal.selected}</span>
           </div>
-        </label>
+          <button onclick="pickRandom('${key}')" class="shrink-0 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-white hover:bg-[#ffd467] border border-[#ffd46788] transition cursor-pointer">
+            🎲 換一個
+          </button>
+        </div>
+      `).join('');
+
+      const container = document.getElementById('mealsContainer');
+      container.innerHTML = Object.entries(mealData).map(([key, meal]) => `
+        <div class="brand-card rounded-2xl p-5 shadow-sm">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-lg text-[#3d2e08]">${meal.title}</h3>
+              <span class="brand-pill text-xs font-bold px-2.5 py-0.5 rounded-full">${meal.tag}</span>
+            </div>
+            <button onclick="pickRandom('${key}')" class="brand-btn text-xs font-bold px-3 py-1.5 rounded-lg transition cursor-pointer">
+              隨機抽一項
+            </button>
+          </div>
+
+          <div class="flex flex-wrap gap-2 mb-4">
+            ${meal.options.map((opt, idx) => {
+              const isSelected = opt === meal.selected;
+              return `
+                <div onclick="selectManual('${key}', '${opt.replace(/'/g, "\\'")}')" class="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm cursor-pointer transition border ${
+                  isSelected
+                    ? 'bg-[#ffd467] border-[#e0b238] font-bold text-[#3d2e08] shadow-xs'
+                    : 'bg-white border-[#ffd46766] text-[#5c491c] hover:bg-[#ffd46728]'
+                }">
+                  <span>${isSelected ? '✔ ' : ''}${opt}</span>
+                  <button onclick="removeOption('${key}', ${idx}, event)" title="刪除此選項" class="text-xs text-[#9c7b28] hover:text-red-600 ml-1 px-1">×</button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="flex gap-2">
+            <input id="input_${key}" onkeydown="if(event.key==='Enter') addOption('${key}')" type="text" placeholder="新增想吃的${meal.title.replace(/^[^\s]+\s/, '')}..." class="flex-1 bg-white/90 border border-[#ffd46788] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#d4a324]">
+            <button onclick="addOption('${key}')" class="bg-[#5c491c] hover:bg-[#3d2e08] text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition cursor-pointer">
+              ＋ 加入名單
+            </button>
+          </div>
+        </div>
       `).join('');
     }
 
