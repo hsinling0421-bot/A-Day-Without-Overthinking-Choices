@@ -4,64 +4,194 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>告別選擇障礙</title>
-  <script src="https://tailwindcss.com"></script>
-  <link href="https://jsdelivr.net" rel="stylesheet">
+  <link rel="preconnect" href="https://googleapis.com">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin>
+  <link href="https://googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
   <style>
     @font-face {
-      font-family: 'jf-openhuninn';
-      src: url('https://jsdelivr.net') format('truetype');
+      font-family: 'SetoFontLocal';
+      src: url('https://jsdelivr.net') format('woff2');
+      font-display: swap;
     }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'jf-openhuninn', 'Noto Sans TC', sans-serif;
+      font-family: 'SetoFontLocal', 'Yomogi', 'Zen Maru Gothic', sans-serif;
+      font-weight: 400;
       background-color: #ffd46728;
-      background-image: radial-gradient(#e5b83b33 2.5px, transparent 2.5px);
-      background-size: 32px 32px;
+      background-image: radial-gradient(#e5b83b38 2px, transparent 2px);
+      background-size: 28px 28px;
       color: #3b2d14;
       text-align: center;
+      min-height: 100vh;
+      padding: 36px 16px 100px;
     }
-    .jf-card {
+    .container { max-width: 460px; margin: 0 auto; }
+    .badge-top {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 2px;
+      padding: 4px 16px;
+      background: #fff;
+      border: 2px solid #3b2d14;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    /* 主標題加粗 */
+    h1.main-title {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-shadow: 0.5px 0 0 #3b2d14;
+      margin-bottom: 14px;
+    }
+    .card {
       background: #ffffff;
       border: 2px solid #3b2d14;
-      border-radius: 32px;
-      box-shadow: 6px 6px 0 #ffd467;
+      border-radius: 28px;
+      box-shadow: 5px 5px 0 #ffd467;
+      padding: 22px 20px;
+      margin-bottom: 18px;
     }
-    .jf-btn {
-      background: #ffd467;
-      color: #3b2d14;
+    /* 餐別標題加粗 */
+    .meal-title {
+      display: inline-block;
+      font-size: 15px;
+      font-weight: 700;
+      text-shadow: 0.4px 0 0 #3b2d14;
+      background: #ffd46766;
+      border: 1.5px solid #3b2d14;
+      padding: 4px 18px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+    .pick-box {
+      background: #ffd46728;
+      border: 2px dashed #3b2d14;
+      border-radius: 20px;
+      padding: 20px 14px;
+      font-size: 21px;
+      font-weight: 400;
+      margin-bottom: 16px;
+    }
+    .btn-row { display: flex; justify-content: center; gap: 10px; }
+    button {
+      font-family: inherit;
+      cursor: pointer;
       border: 2px solid #3b2d14;
-      box-shadow: 3px 3px 0 #3b2d14;
+      border-radius: 999px;
       transition: transform 0.1s ease;
     }
-    .jf-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #3b2d14; }
-    .jf-sub {
+    button:active { transform: translate(2px, 2px); }
+    .btn-gold {
+      background: #ffd467;
+      color: #3b2d14;
+      font-size: 14px;
+      padding: 9px 22px;
+      box-shadow: 3px 3px 0 #3b2d14;
+    }
+    .btn-white {
       background: #fffdf5;
       color: #3b2d14;
+      font-size: 14px;
+      padding: 9px 20px;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: #6e5323;
+      margin-bottom: 14px;
+    }
+    /* 整齊雙排膠囊清單 */
+    .chip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border: 1.8px solid #3b2d14;
+      border-radius: 999px;
+      font-size: 13px;
+      background: #ffffff;
+      cursor: pointer;
+      text-align: center;
+    }
+    .chip.active { background: #ffd467; }
+    .chip-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chip-del {
+      border: none;
+      background: transparent;
+      font-size: 15px;
+      color: #8c6d32;
+      padding: 0 2px 0 6px;
+      line-height: 1;
+    }
+    .chip-del:hover { color: #d9381e; }
+    /* 新增輸入列 */
+    .add-row { display: flex; gap: 8px; align-items: center; }
+    .add-input {
+      flex: 1;
+      font-family: inherit;
+      font-size: 13px;
+      text-align: center;
+      padding: 9px 14px;
       border: 2px solid #3b2d14;
+      border-radius: 999px;
+      background: #fff;
+      outline: none;
+    }
+    /* 右下角圓形懸浮分頁 */
+    .nav-tabs {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      z-index: 30;
+      display: flex;
+      gap: 8px;
+    }
+    .nav-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      font-size: 12px;
+      background: #ffffff;
+      color: #3b2d14;
+      border: 2px solid #3b2d14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .nav-circle.active {
+      background: #ffd467;
+      font-weight: 700;
+      box-shadow: 3px 3px 0 #3b2d14;
+      transform: translateY(-3px);
+    }
+    @media (max-width: 380px) {
+      .chip-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-<body class="min-h-screen pb-28">
+<body>
 
-  <header class="pt-10 pb-6 px-4 max-w-lg mx-auto space-y-3">
-    <span class="inline-block text-xs tracking-widest px-4 py-1 rounded-full bg-white border-2 border-[#3b2d14]">
-      TODAY'S MENU
-    </span>
-    <h1 class="text-3xl font-bold tracking-wider">告別選擇障礙</h1>
-    <div class="pt-1">
-      <button onclick="rollAll()" class="jf-btn text-sm px-6 py-2.5 rounded-full cursor-pointer">
-        今日隨機菜單
-      </button>
-    </div>
-  </header>
+  <div class="container">
+    <header style="margin-bottom: 22px;">
+      <span class="badge-top">TODAY'S MENU</span>
+      <h1 class="main-title">告別選擇障礙</h1>
+      <button onclick="rollAll()" class="btn-gold">今日隨機菜單</button>
+    </header>
 
-  <main id="app" class="max-w-lg mx-auto px-4"></main>
+    <main id="app"></main>
+  </div>
 
-  <!-- 右下角圓形懸浮分頁導覽 -->
-  <nav id="navTabs" class="fixed bottom-5 right-5 z-30 flex items-center gap-2"></nav>
+  <nav id="navTabs" class="nav-tabs"></nav>
 
   <script>
     const ORDER = ['breakfast', 'lunch', 'tea', 'dinner'];
-    let data = JSON.parse(localStorage.getItem('food_jf_v1')) || {
+    let data = JSON.parse(localStorage.getItem('food_seto_v1')) || {
       breakfast: { name: '早餐', pick: '總匯三明治＋鮮奶茶', list: ['總匯三明治＋鮮奶茶', '起司蛋餅＋冰美式', '鮪魚吐司＋無糖豆漿', '日式飯糰＋熱拿鐵', '地瓜＋水煮蛋'] },
       lunch:     { name: '午餐', pick: '舒肥雞胸健康餐盒', list: ['舒肥雞胸健康餐盒', '日式豚骨拉麵', '泰式打拋豬飯', '鮮蝦雲吞麵', '韓式泡菜豆腐鍋'] },
       tea:       { name: '下午茶', pick: '熟成紅茶微糖＋珍珠', list: ['熟成紅茶微糖＋珍珠', '四季春無糖去冰', '焦糖布丁＋熱紅茶', '巴斯克蛋糕＋美式', '現烤可頌＋拿鐵'] },
@@ -69,7 +199,7 @@
     };
     let tab = 'breakfast';
 
-    const save = () => localStorage.setItem('food_jf_v1', JSON.stringify(data));
+    const save = () => localStorage.setItem('food_seto_v1', JSON.stringify(data));
     const go = (t) => { tab = t; render(); };
 
     function roll(k) {
@@ -114,55 +244,55 @@
     function render() {
       const tabs = [...ORDER.map(k => ({ k, label: data[k].name })), { k: 'summary', label: '總覽' }];
       document.getElementById('navTabs').innerHTML = tabs.map(t =>
-        `<button onclick="go('${t.k}')" class="w-13 h-13 w-[52px] h-[52px] rounded-full text-xs cursor-pointer flex items-center justify-center border-2 border-[#3b2d14] transition ${tab === t.k ? 'bg-[#ffd467] shadow-[3px_3px_0_#3b2d14] -translate-y-1' : 'bg-white hover:bg-[#fff6d6]'}">${t.label}</button>`
+        `<button onclick="go('${t.k}')" class="nav-circle ${tab === t.k ? 'active' : ''}">${t.label}</button>`
       ).join('');
 
       const app = document.getElementById('app');
       if (tab === 'summary') {
-        app.innerHTML = `<div class="space-y-4">
-          <div class="jf-card p-5 space-y-3">
-            <h2 class="text-lg">今日隨機菜單總覽</h2>
-            <button id="cpBtn" onclick="copyAll()" class="jf-sub text-xs px-4 py-1.5 rounded-full cursor-pointer">複製整天菜單</button>
+        app.innerHTML = `
+          <div class="card">
+            <h2 class="meal-title" style="margin-bottom:12px;">今日隨機菜單總覽</h2><br>
+            <button id="cpBtn" onclick="copyAll()" class="btn-white" style="font-size:13px;padding:6px 18px;">複製整天菜單</button>
           </div>
           ${ORDER.map(k => `
-            <div class="jf-card p-5 space-y-2.5">
-              <span class="inline-block text-xs px-3 py-0.5 rounded-full bg-[#ffd46745] border border-[#3b2d14]">${data[k].name}</span>
-              <p class="text-lg">${data[k].pick}</p>
-              <div class="flex justify-center gap-2 pt-1">
-                <button onclick="roll('${k}')" class="jf-btn text-xs px-4 py-1.5 rounded-full cursor-pointer">重抽</button>
-                <button onclick="go('${k}')" class="jf-sub text-xs px-4 py-1.5 rounded-full cursor-pointer">編輯名單</button>
+            <div class="card">
+              <span class="meal-title">${data[k].name}</span>
+              <p style="font-size:19px;margin:4px 0 14px;">${data[k].pick}</p>
+              <div class="btn-row">
+                <button onclick="roll('${k}')" class="btn-gold" style="font-size:13px;padding:6px 18px;">重抽</button>
+                <button onclick="go('${k}')" class="btn-white" style="font-size:13px;padding:6px 18px;">編輯名單</button>
               </div>
-            </div>`).join('')}
-        </div>`;
+            </div>`).join('')}`;
         return;
       }
 
       const m = data[tab];
       const nextTab = ORDER[ORDER.indexOf(tab) + 1] || 'summary';
-      app.innerHTML = `<div class="space-y-5">
-        <div class="jf-card p-6 space-y-4">
-          <span class="inline-block text-xs px-3.5 py-1 rounded-full bg-[#ffd46755] border border-[#3b2d14]">${m.name}</span>
-          <div class="py-5 px-4 rounded-2xl bg-[#ffd46728] border-2 border-dashed border-[#3b2d14] text-xl">${m.pick}</div>
-          <div class="flex justify-center gap-3">
-            <button onclick="roll('${tab}')" class="jf-btn text-sm px-6 py-2.5 rounded-full cursor-pointer">幫我抽一個</button>
-            <button onclick="go('${nextTab}')" class="jf-sub text-sm px-5 py-2.5 rounded-full cursor-pointer">下一餐</button>
+      app.innerHTML = `
+        <div class="card">
+          <span class="meal-title">${m.name}</span>
+          <div class="pick-box">${m.pick}</div>
+          <div class="btn-row">
+            <button onclick="roll('${tab}')" class="btn-gold">幫我抽一個</button>
+            <button onclick="go('${nextTab}')" class="btn-white">下一餐</button>
           </div>
         </div>
-        <div class="jf-card p-5 space-y-3">
-          <h3 class="text-sm">我的${m.name}口袋名單</h3>
-          <div class="flex flex-wrap justify-center gap-2">
+        <div class="card">
+          <h3 class="section-sub">我的${m.name}口袋名單</h3>
+          <div class="chip-grid">
             ${m.list.map((item, i) => `
-              <div onclick="choose(${i})" class="px-3.5 py-1.5 rounded-full text-xs border-2 border-[#3b2d14] cursor-pointer flex items-center gap-1.5 ${item === m.pick ? 'bg-[#ffd467]' : 'bg-white hover:bg-[#ffd46728]'}">
-                <span>${item}</span>
-                <button onclick="del(${i}, event)" class="text-xs ml-1 opacity-60 hover:opacity-100">×</button>
+              <div onclick="choose(${i})" class="chip ${item === m.pick ? 'active' : ''}">
+                <span class="chip-text">${item}</span>
+                <button onclick="del(${i}, event)" class="chip-del">×</button>
               </div>`).join('')}
           </div>
         </div>
-        <div class="jf-card p-4 flex justify-center gap-2">
-          <input id="newInp" onkeydown="if(event.key==='Enter')add()" placeholder="新增想吃的${m.name}..." class="flex-1 text-center border-2 border-[#3b2d14] rounded-full px-4 py-2 text-xs bg-white focus:outline-none">
-          <button onclick="add()" class="jf-btn text-xs px-5 py-2 rounded-full cursor-pointer">加入</button>
-        </div>
-      </div>`;
+        <div class="card" style="padding:14px 16px;">
+          <div class="add-row">
+            <input id="newInp" onkeydown="if(event.key==='Enter')add()" placeholder="新增想吃的${m.name}..." class="add-input">
+            <button onclick="add()" class="btn-gold" style="padding:8px 18px;font-size:13px;">加入</button>
+          </div>
+        </div>`;
     }
     render();
   </script>
